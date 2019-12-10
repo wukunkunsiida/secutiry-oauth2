@@ -28,21 +28,20 @@ public class SpringDataUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         //将来连接数据库根据账号查询用户信息
-        //UserDto userDto = userDao.getUserByUsername(username);
-       // if(userDto == null){
+        UserDto userDto = userDao.getUserByUsername(username);
+        if(userDto == null){
             //如果用户查不到，返回null，由provider来抛出异常
-           // return null;
-       // }
+            return null;
+        }
         //根据用户的id查询用户的权限
-       // List<String> permissions = userDao.findPermissionsByUserId(userDto.getId());
+        List<String> permissions = userDao.findPermissionsByUserId(userDto.getId());
         //将permissions转成数组
-       // String[] permissionArray = new String[permissions.size()];
-       // permissions.toArray(permissionArray);
+        String[] permissionArray = new String[permissions.size()];
+        permissions.toArray(permissionArray);
         //将userDto转成json
-       // String principal = JSON.toJSONString(userDto);
-       // UserDetails userDetails = User.withUsername(principal).password("1111").authorities("p1").build();
-
-        UserDetails userDetails=User.withUsername("zhangsan").password("$2a$10$aFsOFzujtPCnUCUKcozsHux0rQ/3faAHGFSVb9Y.B1ntpmEhjRtru").authorities("p1").build();
+        String principal = JSON.toJSONString(userDto);
+        UserDetails userDetails = User.withUsername(principal).password(userDto.getPassword()).authorities(permissionArray).build();
         return userDetails;
+
     }
 }
